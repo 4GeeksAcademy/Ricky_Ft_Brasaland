@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Join Brasa Points | Brasaland</title>
+    <meta
+      name="description"
+      content="Register for Brasaland Brasa Points and start earning rewards across 14 locations in Colombia and the United States."
+    />
+    <link rel="canonical" href="https://brasaland.com/application.html" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="/validation.js" defer></script>
+  </head>
+  <body class="min-h-screen bg-stone-50 text-stone-900 antialiased">
+    <a
+      href="#application-form"
+      class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-white focus:px-4 focus:py-2 focus:text-sm focus:font-semibold"
+      >Skip to form</a
+    >
+
+    <header class="border-b border-stone-200 bg-white" role="banner">
+      <div class="mx-auto flex w-full max-w-4xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
+        <a href="/index.html" class="flex items-center gap-3" aria-label="Back to Brasaland home">
+          <span
+            class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-orange-600 text-lg font-black text-white"
+            aria-hidden="true"
+            >B</span
+          >
+          <span class="text-xl font-extrabold tracking-tight">Brasaland</span>
+        </a>
+        <a
+          href="/index.html"
+          class="rounded-md border border-stone-300 px-3 py-2 text-sm font-semibold hover:border-orange-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-700"
+          >Back to Home</a
+        >
+      </div>
+    </header>
+
+    <main class="mx-auto w-full max-w-4xl px-4 py-10 sm:px-6 lg:px-8">
+      <section aria-labelledby="form-title" class="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm sm:p-8">
+        <h1 id="form-title" class="text-3xl font-black tracking-tight">Join Brasa Points</h1>
+        <p class="mt-3 text-stone-700">
+          Complete your registration and start earning points at any Brasaland location in Colombia and the United States.
+        </p>
+        <p class="mt-2 rounded-lg bg-amber-50 px-4 py-3 text-sm font-medium text-amber-900">
+          Want to place an order? Call your favorite location or visit us directly. Online ordering coming soon!
+        </p>
+
+        <div
+          id="form-status"
+          class="mt-6 hidden rounded-lg border px-4 py-3 text-sm"
+          role="status"
+          aria-live="polite"
+        ></div>
+
+        <form id="application-form" class="mt-6 space-y-8" novalidate aria-describedby="form-help form-status">
+          <p id="form-help" class="text-sm text-stone-600">Fields marked with * are required.</p>
+
+          <fieldset class="space-y-4 rounded-2xl border border-stone-200 p-4 sm:p-5">
+            <legend class="px-1 text-sm font-bold uppercase tracking-wide text-stone-700">Personal details</legend>
+
+            <div class="grid gap-4 sm:grid-cols-2">
+              <div class="sm:col-span-2">
+                <label for="fullName" class="mb-1.5 block text-sm font-semibold text-stone-800">Full name *</label>
+                <input
+                  id="fullName"
+                  name="fullName"
+                  type="text"
+                  autocomplete="name"
+                  required
+                  class="w-full rounded-lg border border-stone-300 px-3 py-2.5 text-sm shadow-sm outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-200"
+                  aria-describedby="fullName-error"
+                />
+                <p id="fullName-error" class="mt-1 text-sm font-medium text-red-700" aria-live="polite"></p>
+              </div>
+
+              <div>
+                <label for="email" class="mb-1.5 block text-sm font-semibold text-stone-800">Email *</label>
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  autocomplete="email"
+                  required
+                  class="w-full rounded-lg border border-stone-300 px-3 py-2.5 text-sm shadow-sm outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-200"
+                  aria-describedby="email-error"
+                />
+                <p id="email-error" class="mt-1 text-sm font-medium text-red-700" aria-live="polite"></p>
+              </div>
+
+              <div>
+                <label for="phone" class="mb-1.5 block text-sm font-semibold text-stone-800">Phone *</label>
+                <input
+                  id="phone"
+                  name="phone"
+                  type="tel"
+                  autocomplete="tel"
+                  placeholder="+57 300 123 4567"
+                  required
+                  class="w-full rounded-lg border border-stone-300 px-3 py-2.5 text-sm shadow-sm outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-200"
+                  aria-describedby="phone-error"
+                />
+                <p id="phone-error" class="mt-1 text-sm font-medium text-red-700" aria-live="polite"></p>
+              </div>
+
+              <div>
+                <label for="dateOfBirth" class="mb-1.5 block text-sm font-semibold text-stone-800">Date of birth *</label>
+                <input
+                  id="dateOfBirth"
+                  name="dateOfBirth"
+                  type="date"
+                  required
+                  class="w-full rounded-lg border border-stone-300 px-3 py-2.5 text-sm shadow-sm outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-200"
+                  aria-describedby="dateOfBirth-error"
+                />
+                <p id="dateOfBirth-error" class="mt-1 text-sm font-medium text-red-700" aria-live="polite"></p>
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset class="space-y-4 rounded-2xl border border-stone-200 p-4 sm:p-5">
+            <legend class="px-1 text-sm font-bold uppercase tracking-wide text-stone-700">Location preferences</legend>
+
+            <div class="grid gap-4 sm:grid-cols-2">
+              <div>
+                <label for="country" class="mb-1.5 block text-sm font-semibold text-stone-800">Country *</label>
+                <select
+                  id="country"
+                  name="country"
+                  required
+                  class="w-full rounded-lg border border-stone-300 bg-white px-3 py-2.5 text-sm shadow-sm outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-200"
+                  aria-describedby="country-error"
+                >
+                  <option value="">Select your country</option>
+                  <option value="Colombia">Colombia</option>
+                  <option value="United States">United States</option>
+                </select>
+                <p id="country-error" class="mt-1 text-sm font-medium text-red-700" aria-live="polite"></p>
+              </div>
+
+              <div>
+                <label for="city" class="mb-1.5 block text-sm font-semibold text-stone-800">City *</label>
+                <select
+                  id="city"
+                  name="city"
+                  required
+                  disabled
+                  class="w-full rounded-lg border border-stone-300 bg-white px-3 py-2.5 text-sm shadow-sm outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-200 disabled:cursor-not-allowed disabled:bg-stone-100"
+                  aria-describedby="city-error"
+                >
+                  <option value="">Select your city</option>
+                </select>
+                <p id="city-error" class="mt-1 text-sm font-medium text-red-700" aria-live="polite"></p>
+              </div>
+
+              <div class="sm:col-span-2">
+                <label for="favoriteLocation" class="mb-1.5 block text-sm font-semibold text-stone-800">Favorite Brasaland location</label>
+                <select
+                  id="favoriteLocation"
+                  name="favoriteLocation"
+                  disabled
+                  class="w-full rounded-lg border border-stone-300 bg-white px-3 py-2.5 text-sm shadow-sm outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-200 disabled:cursor-not-allowed disabled:bg-stone-100"
+                  aria-describedby="favoriteLocation-help"
+                >
+                  <option value="">Select a location</option>
+                </select>
+                <p id="favoriteLocation-help" class="mt-1 text-xs text-stone-500">
+                  Optional. Choose country and city first.
+                </p>
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset class="space-y-4 rounded-2xl border border-stone-200 p-4 sm:p-5">
+            <legend class="px-1 text-sm font-bold uppercase tracking-wide text-stone-700">Preferences</legend>
+
+            <div>
+              <p class="mb-2 text-sm font-semibold text-stone-800">Dietary preferences</p>
+              <div class="grid gap-2 sm:grid-cols-2">
+                <label class="inline-flex items-center gap-2 text-sm text-stone-700">
+                  <input type="checkbox" name="dietaryPreferences" value="No restrictions" class="h-4 w-4 rounded border-stone-300 text-orange-600 focus:ring-orange-500" />
+                  No restrictions
+                </label>
+                <label class="inline-flex items-center gap-2 text-sm text-stone-700">
+                  <input type="checkbox" name="dietaryPreferences" value="Vegetarian" class="h-4 w-4 rounded border-stone-300 text-orange-600 focus:ring-orange-500" />
+                  Vegetarian
+                </label>
+                <label class="inline-flex items-center gap-2 text-sm text-stone-700">
+                  <input type="checkbox" name="dietaryPreferences" value="Gluten-free" class="h-4 w-4 rounded border-stone-300 text-orange-600 focus:ring-orange-500" />
+                  Gluten-free
+                </label>
+                <label class="inline-flex items-center gap-2 text-sm text-stone-700">
+                  <input type="checkbox" name="dietaryPreferences" value="Other" class="h-4 w-4 rounded border-stone-300 text-orange-600 focus:ring-orange-500" />
+                  Other
+                </label>
+              </div>
+            </div>
+
+            <div>
+              <label for="foundUs" class="mb-1.5 block text-sm font-semibold text-stone-800">How did you find us? *</label>
+              <select
+                id="foundUs"
+                name="foundUs"
+                required
+                class="w-full rounded-lg border border-stone-300 bg-white px-3 py-2.5 text-sm shadow-sm outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-200"
+                aria-describedby="foundUs-error"
+              >
+                <option value="">Select an option</option>
+                <option value="Social media">Social media</option>
+                <option value="Recommendation">Recommendation</option>
+                <option value="Walked by">Walked by</option>
+                <option value="Internet search">Internet search</option>
+                <option value="Other">Other</option>
+              </select>
+              <p id="foundUs-error" class="mt-1 text-sm font-medium text-red-700" aria-live="polite"></p>
+            </div>
+          </fieldset>
+
+          <fieldset class="space-y-3 rounded-2xl border border-stone-200 p-4 sm:p-5">
+            <legend class="px-1 text-sm font-bold uppercase tracking-wide text-stone-700">Program consent</legend>
+
+            <label class="flex items-start gap-2 text-sm text-stone-700">
+              <input
+                id="acceptTerms"
+                name="acceptTerms"
+                type="checkbox"
+                required
+                class="mt-0.5 h-4 w-4 rounded border-stone-300 text-orange-600 focus:ring-orange-500"
+                aria-describedby="acceptTerms-error"
+              />
+              <span>I accept program terms *</span>
+            </label>
+            <p id="acceptTerms-error" class="text-sm font-medium text-red-700" aria-live="polite"></p>
+
+            <label class="flex items-start gap-2 text-sm text-stone-700">
+              <input
+                id="receiveOffers"
+                name="receiveOffers"
+                type="checkbox"
+                class="mt-0.5 h-4 w-4 rounded border-stone-300 text-orange-600 focus:ring-orange-500"
+              />
+              <span>I want to receive offers via email</span>
+            </label>
+          </fieldset>
+
+          <div class="flex flex-wrap items-center gap-3">
+            <button
+              type="submit"
+              class="rounded-lg bg-orange-700 px-5 py-3 text-sm font-bold uppercase tracking-wide text-white transition hover:bg-orange-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-700"
+            >
+              Submit application
+            </button>
+            <button
+              type="reset"
+              class="rounded-lg border border-stone-300 px-5 py-3 text-sm font-bold uppercase tracking-wide text-stone-800 transition hover:border-stone-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-700"
+            >
+              Clear form
+            </button>
+          </div>
+        </form>
+      </section>
+    </main>
+  </body>
+</html>
