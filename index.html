@@ -38,7 +38,7 @@
           "@type": "ContactPoint",
           "telephone": "+57-4-123-4567",
           "contactType": "customer service",
-          "availableLanguage": ["English"]
+          "availableLanguage": ["English", "Spanish"]
         },
         "sameAs": [
           "https://instagram.com/brasaland",
@@ -51,12 +51,13 @@
     <a
       href="#main-content"
       class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-white focus:px-4 focus:py-2 focus:text-sm focus:font-semibold"
+      data-i18n="skipMain"
       >Skip to main content</a
     >
 
     <header class="sticky top-0 z-40 border-b border-stone-200 bg-white/95 backdrop-blur" role="banner">
       <div class="mx-auto flex w-full max-w-7xl flex-wrap items-center justify-between gap-3 px-4 py-4 sm:px-6 lg:px-8">
-        <a href="/index.html" class="flex items-center gap-3" aria-label="Brasaland home page">
+        <a href="/index.html" class="flex items-center gap-3" aria-label="Brasaland home page" data-i18n-aria-label="homeAria">
           <span
             class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-orange-600 text-lg font-black text-white"
             aria-hidden="true"
@@ -65,22 +66,21 @@
           <span class="text-xl font-extrabold tracking-tight">Brasaland</span>
         </a>
 
-        <nav aria-label="Primary navigation" class="order-3 w-full overflow-x-auto md:order-none md:w-auto">
+        <nav aria-label="Primary navigation" class="order-3 w-full overflow-x-auto md:order-none md:w-auto" data-i18n-aria-label="navAria">
           <ul class="flex min-w-max items-center gap-5 text-sm font-medium md:gap-6">
-            <li><a href="#home" class="hover:text-orange-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-700">Home</a></li>
-            <li><a href="#locations" class="hover:text-orange-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-700">Locations</a></li>
-            <li><a href="#menu" class="hover:text-orange-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-700">Menu</a></li>
-            <li><a href="#brasa-points" class="hover:text-orange-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-700">Brasa Points</a></li>
-            <li><a href="#contact" class="hover:text-orange-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-700">Contact</a></li>
+            <li><a href="#home" class="hover:text-orange-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-700" data-i18n="navHome">Home</a></li>
+            <li><a href="#locations" class="hover:text-orange-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-700" data-i18n="navLocations">Locations</a></li>
+            <li><a href="#menu" class="hover:text-orange-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-700" data-i18n="navMenu">Menu</a></li>
+            <li><a href="#brasa-points" class="hover:text-orange-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-700" data-i18n="navPoints">Brasa Points</a></li>
+            <li><a href="#contact" class="hover:text-orange-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-700" data-i18n="navContact">Contact</a></li>
           </ul>
         </nav>
 
-        <p
-          class="rounded-md border border-stone-300 px-3 py-1.5 text-xs font-semibold text-stone-700"
-          aria-label="Site language"
-        >
-          Language: EN
-        </p>
+        <div class="flex items-center gap-2 rounded-md border border-stone-300 px-2 py-1.5" aria-label="Language selector" data-i18n-aria-label="languageSelectorAria">
+          <button type="button" data-lang-switch="es" aria-label="Switch language to Spanish" data-i18n-aria-label="langButtonEsAria" class="rounded px-2 py-1 text-xs font-semibold text-stone-700 hover:bg-stone-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-700">ES</button>
+          <span class="text-xs text-stone-400">|</span>
+          <button type="button" data-lang-switch="en" aria-label="Switch language to English" data-i18n-aria-label="langButtonEnAria" class="rounded px-2 py-1 text-xs font-semibold text-stone-700 hover:bg-stone-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-700">EN</button>
+        </div>
       </div>
     </header>
 
@@ -91,32 +91,38 @@
 
         <div class="relative grid items-center gap-10 lg:grid-cols-2">
           <article>
-            <p class="mb-4 inline-block rounded-full border border-orange-200/40 bg-orange-300/20 px-3 py-1 text-xs font-semibold uppercase tracking-wider">
+            <p class="mb-4 inline-block rounded-full border border-orange-200/40 bg-orange-300/20 px-3 py-1 text-xs font-semibold uppercase tracking-wider" data-i18n="heroTag">
               Since 2008 | 14 Locations
             </p>
-            <h1 id="hero-title" class="text-4xl font-black leading-tight sm:text-5xl">
+            <h1 id="hero-title" class="text-4xl font-black leading-tight sm:text-5xl" data-i18n="heroTitle">
               The taste of the grill, in every bite
             </h1>
-            <p class="mt-5 max-w-2xl text-lg text-orange-50/90">
+            <p class="mt-5 max-w-2xl text-lg text-orange-50/90" data-i18n="heroSubtitle">
               Since 2008 serving the best grilled meats in Colombia and the United States. 14 locations, one passion for quality and flavor.
             </p>
             <div class="mt-8 flex flex-wrap gap-3">
               <a
                 href="/application.html"
                 class="rounded-lg bg-amber-400 px-5 py-3 text-sm font-bold uppercase tracking-wide text-stone-900 transition hover:bg-amber-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-200"
+                data-i18n="heroCta"
                 >Join Brasa Points</a
               >
               <a
                 href="#locations"
                 class="rounded-lg border border-orange-200/40 px-5 py-3 text-sm font-bold uppercase tracking-wide text-white transition hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+                data-i18n="heroSecondary"
                 >See locations</a
               >
+              <span id="language-badge" class="inline-flex items-center rounded-lg border border-orange-200/40 bg-black/20 px-3 py-2 text-xs font-bold uppercase tracking-wider text-orange-100">
+                EN
+              </span>
             </div>
           </article>
           <figure class="overflow-hidden rounded-2xl border border-orange-200/20 bg-white/10 p-2">
             <img
               src="https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=1100&q=80"
               alt="Brasaland grilled meat platter served with sides in a warm family restaurant atmosphere"
+              data-i18n-alt="heroImageAlt"
               class="h-64 w-full rounded-xl object-cover sm:h-80"
               loading="lazy"
             />
@@ -130,13 +136,14 @@
             <img
               src="https://images.unsplash.com/photo-1592861956120-e524fc739696?auto=format&fit=crop&w=1000&q=80"
               alt="Restaurant team preparing grilled dishes in a professional kitchen"
+              data-i18n-alt="storyImageAlt"
               class="h-72 w-full rounded-2xl object-cover shadow-sm"
               loading="lazy"
             />
           </figure>
           <article>
-            <h2 id="story-title" class="text-3xl font-black tracking-tight text-stone-900">Our Story</h2>
-            <p class="mt-4 text-base leading-7 text-stone-700">
+            <h2 id="story-title" class="text-3xl font-black tracking-tight text-stone-900" data-i18n="storyTitle">Our Story</h2>
+            <p class="mt-4 text-base leading-7 text-stone-700" data-i18n="storyText">
               Founded in Medellín in 2008, Brasaland began as a family dream: sharing the authentic taste of grilled meat with consistent quality and warm service. Today we are 14 restaurants in two countries, but we maintain the same recipe for success: fresh products, traditional techniques, and passion for every dish we serve.
             </p>
           </article>
@@ -144,44 +151,44 @@
       </section>
 
       <section id="menu" class="py-8 sm:py-10" aria-labelledby="unique-title">
-        <h2 id="unique-title" class="text-3xl font-black tracking-tight">What Makes Us Unique</h2>
+        <h2 id="unique-title" class="text-3xl font-black tracking-tight" data-i18n="uniqueTitle">What Makes Us Unique</h2>
         <div class="mt-8 grid gap-5 md:grid-cols-3">
           <article class="rounded-2xl border border-stone-200 bg-white p-6 shadow-sm">
-            <h3 class="text-xl font-extrabold text-orange-700">Consistent Quality</h3>
+            <h3 class="text-xl font-extrabold text-orange-700" data-i18n="u1Title">Consistent Quality</h3>
             <ul class="mt-3 space-y-2 text-stone-700">
-              <li>Same recipes and standards in all locations</li>
-              <li>Fresh ingredients selected daily</li>
+              <li data-i18n="u1Point1">Same recipes and standards in all locations</li>
+              <li data-i18n="u1Point2">Fresh ingredients selected daily</li>
             </ul>
           </article>
           <article class="rounded-2xl border border-stone-200 bg-white p-6 shadow-sm">
-            <h3 class="text-xl font-extrabold text-orange-700">Warm Experience</h3>
+            <h3 class="text-xl font-extrabold text-orange-700" data-i18n="u2Title">Warm Experience</h3>
             <ul class="mt-3 space-y-2 text-stone-700">
-              <li>Friendly and attentive service</li>
-              <li>Family atmosphere on every visit</li>
+              <li data-i18n="u2Point1">Friendly and attentive service</li>
+              <li data-i18n="u2Point2">Family atmosphere on every visit</li>
             </ul>
           </article>
           <article class="rounded-2xl border border-stone-200 bg-white p-6 shadow-sm">
-            <h3 class="text-xl font-extrabold text-orange-700">Speed</h3>
+            <h3 class="text-xl font-extrabold text-orange-700" data-i18n="u3Title">Speed</h3>
             <ul class="mt-3 space-y-2 text-stone-700">
-              <li>Your food ready in minutes</li>
-              <li>Without sacrificing flavor or quality</li>
+              <li data-i18n="u3Point1">Your food ready in minutes</li>
+              <li data-i18n="u3Point2">Without sacrificing flavor or quality</li>
             </ul>
           </article>
         </div>
       </section>
 
       <section id="locations" class="py-16 sm:py-20" aria-labelledby="locations-title">
-        <h2 id="locations-title" class="text-3xl font-black tracking-tight">Our Locations</h2>
+        <h2 id="locations-title" class="text-3xl font-black tracking-tight" data-i18n="locationsTitle">Our Locations</h2>
         <div class="mt-8 grid gap-6 md:grid-cols-2">
           <article class="rounded-2xl bg-orange-50 p-6">
-            <h3 class="text-2xl font-bold text-orange-900">Colombia</h3>
-            <p class="mt-2 text-stone-700">10 restaurants in Medellín, Bogotá and Cali</p>
-            <p class="mt-1 text-sm font-semibold text-stone-700">Hours: Mon-Sun 11:00 AM - 10:00 PM</p>
+            <h3 class="text-2xl font-bold text-orange-900" data-i18n="colombiaTitle">Colombia</h3>
+            <p class="mt-2 text-stone-700" data-i18n="colombiaText">10 restaurants in Medellín, Bogotá and Cali</p>
+            <p class="mt-1 text-sm font-semibold text-stone-700" data-i18n="hoursText">Hours: Mon-Sun 11:00 AM - 10:00 PM</p>
           </article>
           <article class="rounded-2xl bg-blue-50 p-6">
-            <h3 class="text-2xl font-bold text-blue-900">United States (Florida)</h3>
-            <p class="mt-2 text-stone-700">4 restaurants in Miami and Orlando</p>
-            <p class="mt-1 text-sm font-semibold text-stone-700">Hours: Mon-Sun 11:00 AM - 10:00 PM</p>
+            <h3 class="text-2xl font-bold text-blue-900" data-i18n="usaTitle">United States (Florida)</h3>
+            <p class="mt-2 text-stone-700" data-i18n="usaText">4 restaurants in Miami and Orlando</p>
+            <p class="mt-1 text-sm font-semibold text-stone-700" data-i18n="hoursText">Hours: Mon-Sun 11:00 AM - 10:00 PM</p>
           </article>
         </div>
       </section>
@@ -189,22 +196,23 @@
       <section id="brasa-points" class="rounded-3xl bg-stone-900 px-6 py-14 text-white sm:px-10 sm:py-16" aria-labelledby="points-title">
         <div class="grid gap-8 md:grid-cols-[1.2fr_1fr] md:items-start">
           <article>
-            <h2 id="points-title" class="text-3xl font-black tracking-tight sm:text-4xl">Earn points with every visit</h2>
+            <h2 id="points-title" class="text-3xl font-black tracking-tight sm:text-4xl" data-i18n="pointsTitle">Earn points with every visit</h2>
             <ul class="mt-6 space-y-3 text-stone-100">
-              <li>Accumulate 1 point for every $10,000 COP or $5 USD</li>
-              <li>Redeem your points for discounts and free dishes</li>
-              <li>Exclusive offers for members</li>
-              <li>100% digital registration - no more paper cards!</li>
+              <li data-i18n="points1">Accumulate 1 point for every $10,000 COP or $5 USD</li>
+              <li data-i18n="points2">Redeem your points for discounts and free dishes</li>
+              <li data-i18n="points3">Exclusive offers for members</li>
+              <li data-i18n="points4">100% digital registration - no more paper cards!</li>
             </ul>
             <a
               href="/application.html"
               class="mt-8 inline-flex rounded-lg bg-amber-400 px-5 py-3 text-sm font-bold uppercase tracking-wide text-stone-900 transition hover:bg-amber-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-200"
+              data-i18n="pointsCta"
               >Join Brasa Points</a
             >
           </article>
-          <aside class="rounded-2xl border border-stone-700 bg-stone-800 p-5" aria-label="Order notice">
-            <h3 class="text-lg font-bold text-amber-300">Important notice</h3>
-            <p class="mt-2 text-sm leading-6 text-stone-200">
+          <aside class="rounded-2xl border border-stone-700 bg-stone-800 p-5" aria-label="Order notice" data-i18n-aria-label="orderNoticeAria">
+            <h3 class="text-lg font-bold text-amber-300" data-i18n="noticeTitle">Important notice</h3>
+            <p class="mt-2 text-sm leading-6 text-stone-200" data-i18n="noticeText">
               Want to place an order? Call your favorite location or visit us directly. Online ordering coming soon!
             </p>
           </aside>
@@ -212,18 +220,18 @@
       </section>
 
       <section id="contact" class="py-16 sm:py-20" aria-labelledby="contact-title">
-        <h2 id="contact-title" class="text-3xl font-black tracking-tight">Contact</h2>
+        <h2 id="contact-title" class="text-3xl font-black tracking-tight" data-i18n="contactTitle">Contact</h2>
         <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <a href="mailto:hello@brasaland.com" class="rounded-xl border border-stone-200 bg-white p-5 shadow-sm hover:border-orange-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-700">
-            <p class="text-xs font-bold uppercase tracking-wider text-stone-500">Email</p>
+            <p class="text-xs font-bold uppercase tracking-wider text-stone-500" data-i18n="emailLabel">Email</p>
             <p class="mt-1 font-semibold text-stone-800">hello@brasaland.com</p>
           </a>
           <a href="tel:+5741234567" class="rounded-xl border border-stone-200 bg-white p-5 shadow-sm hover:border-orange-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-700">
-            <p class="text-xs font-bold uppercase tracking-wider text-stone-500">Colombia</p>
+            <p class="text-xs font-bold uppercase tracking-wider text-stone-500" data-i18n="colombiaLabel">Colombia</p>
             <p class="mt-1 font-semibold text-stone-800">+57 4 123 4567</p>
           </a>
           <a href="tel:+13051234567" class="rounded-xl border border-stone-200 bg-white p-5 shadow-sm hover:border-orange-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-700">
-            <p class="text-xs font-bold uppercase tracking-wider text-stone-500">Florida</p>
+            <p class="text-xs font-bold uppercase tracking-wider text-stone-500" data-i18n="floridaLabel">Florida</p>
             <p class="mt-1 font-semibold text-stone-800">+1 305 123 4567</p>
           </a>
         </div>
@@ -232,12 +240,13 @@
 
     <footer class="mt-8 border-t border-stone-200 bg-white" role="contentinfo">
       <div class="mx-auto flex w-full max-w-7xl flex-col gap-3 px-4 py-8 text-sm text-stone-700 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
-        <p>© 2025 Brasaland. All rights reserved.</p>
+        <p data-i18n="footerRights">© 2025 Brasaland. All rights reserved.</p>
         <div class="flex gap-4">
-          <a href="https://instagram.com/brasaland" target="_blank" rel="noopener noreferrer" class="font-semibold hover:text-orange-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-700">Instagram</a>
-          <a href="https://facebook.com/brasaland" target="_blank" rel="noopener noreferrer" class="font-semibold hover:text-orange-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-700">Facebook</a>
+          <a href="https://instagram.com/brasaland" target="_blank" rel="noopener noreferrer" class="font-semibold hover:text-orange-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-700" data-i18n="instagram">Instagram</a>
+          <a href="https://facebook.com/brasaland" target="_blank" rel="noopener noreferrer" class="font-semibold hover:text-orange-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-700" data-i18n="facebook">Facebook</a>
         </div>
       </div>
     </footer>
+    <script src="/i18n.js" defer></script>
   </body>
 </html>

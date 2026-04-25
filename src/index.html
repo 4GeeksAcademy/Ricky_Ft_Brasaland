@@ -1,0 +1,301 @@
+ru<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Brasaland Milestone 2 - Test Page</title>
+    <style>
+      :root {
+        --bg: #f6f7fb;
+        --card: #ffffff;
+        --text: #1f2937;
+        --muted: #6b7280;
+        --accent: #0f766e;
+        --accent-2: #0ea5e9;
+        --border: #e5e7eb;
+        --ok: #166534;
+        --warn: #92400e;
+        --err: #b91c1c;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(180deg, #f8fafc 0%, var(--bg) 100%);
+        color: var(--text);
+      }
+
+      .wrap {
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 24px;
+      }
+
+      h1 {
+        margin: 0 0 8px;
+        font-size: 1.8rem;
+      }
+
+      p {
+        margin: 0;
+      }
+
+      .muted {
+        color: var(--muted);
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 16px;
+        margin-top: 20px;
+      }
+
+      .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 16px;
+        box-shadow: 0 8px 24px rgba(2, 6, 23, 0.04);
+      }
+
+      .card h2 {
+        margin: 0 0 10px;
+        font-size: 1.05rem;
+      }
+
+      .actions {
+        margin-top: 20px;
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      button {
+        border: 0;
+        border-radius: 10px;
+        padding: 10px 14px;
+        color: #fff;
+        font-weight: 600;
+        cursor: pointer;
+      }
+
+      button.primary {
+        background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      }
+
+      button.secondary {
+        background: #334155;
+      }
+
+      pre {
+        margin-top: 16px;
+        background: #0b1020;
+        color: #e5e7eb;
+        border-radius: 12px;
+        padding: 14px;
+        overflow-x: auto;
+        min-height: 120px;
+        border: 1px solid #111827;
+      }
+
+      .tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border-radius: 999px;
+        border: 1px solid var(--border);
+        padding: 4px 10px;
+        font-size: 0.84rem;
+        margin-top: 12px;
+      }
+
+      .ok {
+        color: var(--ok);
+      }
+
+      .warn {
+        color: var(--warn);
+      }
+
+      .err {
+        color: var(--err);
+      }
+
+      code {
+        background: #eef2ff;
+        border: 1px solid #e5e7eb;
+        border-radius: 6px;
+        padding: 1px 5px;
+        font-size: 0.92em;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <h1>Brasaland - Milestone 2 Test Page</h1>
+      <p class="muted">
+        Optional browser test surface for sample data and expected behavior checks.
+      </p>
+
+      <div class="tag warn">
+        Build first with <code>npm run build</code>, then load this page from a local server.
+      </div>
+
+      <section class="grid" aria-label="Sample data overview">
+        <article class="card">
+          <h2>Sample Menu Items</h2>
+          <p class="muted">Includes Meat, Side, and Beverage examples in USD/COP.</p>
+        </article>
+        <article class="card">
+          <h2>Sample Locations</h2>
+          <p class="muted">Colombia and USA location records with capacity and costs.</p>
+        </article>
+        <article class="card">
+          <h2>Sample Sales</h2>
+          <p class="muted">Transactions for two different locations and payment methods.</p>
+        </article>
+      </section>
+
+      <div class="actions">
+        <button class="primary" id="runSmokeTests" type="button">Run Smoke Tests (Real Utilities)</button>
+        <button class="secondary" id="clearOutput" type="button">Clear Output</button>
+      </div>
+
+      <pre id="output" aria-live="polite">Ready.</pre>
+    </main>
+
+    <script type="module">
+      const output = document.getElementById("output");
+      let apiPromise;
+
+      const sampleMenuItems = [
+        {
+          id: "ITEM-PICANHA-250",
+          name: "Picanha 250g",
+          category: "Meat",
+          basePrice: { USD: 18.5, COP: 74000 },
+          ingredientCost: { USD: 7.2, COP: 28800 },
+          prepTimeMinutes: 15,
+          isAvailableInColombia: true,
+          isAvailableInUSA: true,
+          allergens: [],
+          status: "Active",
+        },
+        {
+          id: "ITEM-FRIES",
+          name: "French Fries",
+          category: "Side",
+          basePrice: { USD: 4.5, COP: 18000 },
+          ingredientCost: { USD: 1.2, COP: 4800 },
+          prepTimeMinutes: 8,
+          isAvailableInColombia: true,
+          isAvailableInUSA: true,
+          allergens: [],
+          status: "Active",
+        },
+      ];
+
+      const sampleSales = [
+        {
+          id: "TXN-2024-15482",
+          locationId: "LOC-MEDELLIN-01",
+          itemId: "ITEM-PICANHA-250",
+          quantity: 2,
+          totalPrice: { USD: 37.0, COP: 148000 },
+          paymentMethod: "Credit card",
+          timestamp: new Date("2024-03-15T19:30:00"),
+          waiterName: "Maria Gonzalez",
+        },
+        {
+          id: "TXN-2024-15483",
+          locationId: "LOC-MIAMI-01",
+          itemId: "ITEM-FRIES",
+          quantity: 3,
+          totalPrice: { USD: 13.5, COP: 54000 },
+          paymentMethod: "Cash",
+          timestamp: new Date("2024-03-15T20:15:00"),
+          waiterName: "John Smith",
+        },
+      ];
+
+      function appendLine(text) {
+        output.textContent += "\n" + text;
+      }
+
+      function clearOutput() {
+        output.textContent = "Ready.";
+      }
+
+      function round2(value) {
+        return Math.round((value + Number.EPSILON) * 100) / 100;
+      }
+
+      async function loadUtilities() {
+        if (!apiPromise) {
+          apiPromise = import("../dist/index.js");
+        }
+
+        return apiPromise;
+      }
+
+      async function runSmokeTests() {
+        clearOutput();
+
+        let api;
+        try {
+          api = await loadUtilities();
+        } catch (error) {
+          appendLine("Could not import ../dist/index.js");
+          appendLine("Run npm run build and serve repository root over HTTP.");
+          appendLine(String(error));
+          return;
+        }
+
+        appendLine("Loaded compiled utilities from ../dist/index.js");
+
+        const locationSales = api.filterSalesByLocation(sampleSales, "LOC-MEDELLIN-01");
+        appendLine("filterSalesByLocation -> expected 1, got " + locationSales.length);
+
+        const sortedByUsd = api.sortMenuItemsByPrice(sampleMenuItems, "USD", "desc");
+        appendLine(
+          "sortMenuItemsByPrice USD desc -> expected ITEM-PICANHA-250 first, got " +
+            sortedByUsd[0].id,
+        );
+
+        const dailyRevenue = api.calculateDailyRevenue(
+          sampleSales,
+          new Date("2024-03-15T00:00:00Z"),
+          "USD",
+        );
+        appendLine("calculateDailyRevenue USD -> expected 50.5, got " + dailyRevenue);
+
+        const converted = api.convertCurrency(5, "USD", "COP");
+        appendLine("convertCurrency 5 USD->COP -> expected 20000, got " + converted);
+
+        const averageTicket = api.calculateAverageTicket(sampleSales, "USD");
+        appendLine(
+          "calculateAverageTicket USD -> expected " + round2(50.5 / 2) + ", got " + averageTicket,
+        );
+
+        const paymentCounts = api.countSalesByPaymentMethod(sampleSales);
+        appendLine(
+          "countSalesByPaymentMethod -> Cash=" +
+            paymentCounts.Cash +
+            ", Credit=" +
+            paymentCounts["Credit card"],
+        );
+
+        const validation = api.validateSaleTransaction(sampleSales[0]);
+        appendLine("validateSaleTransaction(first sample) -> valid=" + validation.valid);
+      }
+
+      document.getElementById("runSmokeTests").addEventListener("click", runSmokeTests);
+      document.getElementById("clearOutput").addEventListener("click", clearOutput);
+    </script>
+  </body>
+</html>
