@@ -60,24 +60,68 @@
     }
   };
 
-  const requiredMessages = {
-    fullName: "Enter your full name (first and last name)",
-    email: "Enter a valid email (example: <name@email.com>)",
-    phone:
-      "Phone must include country code (example: +57 300 123 4567 or +1 305 123 4567)",
-    country: "Select your country",
-    city: "Select your city",
-    foundUs: "Tell us how you found Brasaland",
-    dateOfBirth: "You must be 18 or older to register for Brasa Points",
-    acceptTerms: "You must accept the Brasa Points program terms to continue"
+  const copyByLanguage = {
+    en: {
+      requiredMessages: {
+        fullName: "Enter your full name (first and last name)",
+        email: "Enter a valid email (example: <name@email.com>)",
+        phone:
+          "Phone must include country code (example: +57 300 123 4567 or +1 305 123 4567)",
+        country: "Select your country",
+        city: "Select your city",
+        foundUs: "Tell us how you found Brasaland",
+        dateOfBirth: "You must be 18 or older to register for Brasa Points",
+        acceptTerms: "You must accept the Brasa Points program terms to continue"
+      },
+      successMessage: {
+        title: "Welcome to Brasa Points!",
+        line1:
+          "Your registration was successful. You will receive a confirmation email in the next few minutes with your account details and how to start earning points.",
+        line2: "You can now enjoy your benefits at any of our 14 locations!"
+      },
+      formErrorStatus: "Please correct the highlighted fields and try again.",
+      selectCity: "Select your city",
+      selectLocation: "Select a location"
+    },
+    es: {
+      requiredMessages: {
+        fullName: "Ingresa tu nombre completo (nombre y apellido)",
+        email: "Ingresa un correo valido (ejemplo: nombre@email.com)",
+        phone:
+          "El telefono debe incluir codigo de pais (ejemplo: +57 300 123 4567 o +1 305 123 4567)",
+        country: "Selecciona tu pais",
+        city: "Selecciona tu ciudad",
+        foundUs: "Cuentanos como conociste Brasaland",
+        dateOfBirth: "Debes tener 18 anos o mas para registrarte en Brasa Points",
+        acceptTerms: "Debes aceptar los terminos de Brasa Points para continuar"
+      },
+      successMessage: {
+        title: "Bienvenido a Brasa Points!",
+        line1:
+          "Tu registro fue exitoso. Recibiras un correo de confirmacion en los proximos minutos con los detalles de tu cuenta y como empezar a acumular puntos.",
+        line2: "Ya puedes disfrutar tus beneficios en cualquiera de nuestras 14 sedes!"
+      },
+      formErrorStatus: "Corrige los campos resaltados e intenta de nuevo.",
+      selectCity: "Selecciona tu ciudad",
+      selectLocation: "Selecciona una sede"
+    }
   };
 
-  const successMessage = {
-    title: "Welcome to Brasa Points!",
-    line1:
-      "Your registration was successful. You will receive a confirmation email in the next few minutes with your account details and how to start earning points.",
-    line2: "You can now enjoy your benefits at any of our 14 locations!"
-  };
+  function getLanguage() {
+    if (window.BrasalandI18n && typeof window.BrasalandI18n.getLang === "function") {
+      return window.BrasalandI18n.getLang();
+    }
+
+    const fallback = window.localStorage.getItem("brasaland-language");
+    if (fallback === "es" || fallback === "en") {
+      return fallback;
+    }
+    return "en";
+  }
+
+  function getCopy() {
+    return copyByLanguage[getLanguage()] || copyByLanguage.en;
+  }
 
   function setFieldError(fieldName, message) {
     const field = fields[fieldName];
@@ -112,6 +156,8 @@
       fields.status.classList.add("border-red-200", "bg-red-50", "text-red-800");
       return;
     }
+
+    const successMessage = getCopy().successMessage;
 
     fields.status.innerHTML =
       '<p class="font-extrabold">' +
@@ -150,26 +196,39 @@
     });
   }
 
-  function syncCities() {
+  function syncCities(preserveSelection) {
     const selectedCountry = fields.country.value;
+    const previousCity = fields.city.value;
+    const previousLocation = fields.favoriteLocation.value;
 
     if (!selectedCountry || !dataMap[selectedCountry]) {
-      fillOptions(fields.city, [], "Select your city");
+      fillOptions(fields.city, [], getCopy().selectCity);
       fields.city.value = "";
       fields.city.disabled = true;
-      syncLocations();
+      syncLocations(false);
       return;
     }
 
-    fillOptions(fields.city, dataMap[selectedCountry].cities, "Select your city");
+    fillOptions(fields.city, dataMap[selectedCountry].cities, getCopy().selectCity);
     fields.city.disabled = false;
+
+    if (preserveSelection && dataMap[selectedCountry].cities.indexOf(previousCity) !== -1) {
+      fields.city.value = previousCity;
+      syncLocations(true, previousLocation);
+      return;
+    }
+
     fields.city.value = "";
-    syncLocations();
+    syncLocations(false);
   }
 
-  function syncLocations() {
+  function syncLocations(preserveSelection, previousLocation) {
     const selectedCountry = fields.country.value;
     const selectedCity = fields.city.value;
+    const locationToRestore =
+      typeof previousLocation === "string"
+        ? previousLocation
+        : fields.favoriteLocation.value;
 
     if (
       !selectedCountry ||
@@ -177,15 +236,21 @@
       !dataMap[selectedCountry] ||
       !dataMap[selectedCountry].locations[selectedCity]
     ) {
-      fillOptions(fields.favoriteLocation, [], "Select a location");
+      fillOptions(fields.favoriteLocation, [], getCopy().selectLocation);
       fields.favoriteLocation.value = "";
       fields.favoriteLocation.disabled = true;
       return;
     }
 
     const locations = dataMap[selectedCountry].locations[selectedCity];
-    fillOptions(fields.favoriteLocation, locations, "Select a location");
+    fillOptions(fields.favoriteLocation, locations, getCopy().selectLocation);
     fields.favoriteLocation.disabled = false;
+
+    if (preserveSelection && locations.indexOf(locationToRestore) !== -1) {
+      fields.favoriteLocation.value = locationToRestore;
+      return;
+    }
+
     fields.favoriteLocation.value = "";
   }
 
@@ -194,7 +259,7 @@
     const words = value.split(/\s+/).filter(Boolean);
     const isValid = words.length >= 2;
 
-    setFieldError("fullName", isValid ? "" : requiredMessages.fullName);
+    setFieldError("fullName", isValid ? "" : getCopy().requiredMessages.fullName);
     return isValid;
   }
 
@@ -203,7 +268,7 @@
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
     const isValid = emailPattern.test(value);
 
-    setFieldError("email", isValid ? "" : requiredMessages.email);
+    setFieldError("email", isValid ? "" : getCopy().requiredMessages.email);
     return isValid;
   }
 
@@ -220,25 +285,25 @@
       isValid = value.startsWith("+1");
     }
 
-    setFieldError("phone", isValid ? "" : requiredMessages.phone);
+    setFieldError("phone", isValid ? "" : getCopy().requiredMessages.phone);
     return isValid;
   }
 
   function validateCountry() {
     const isValid = Boolean(fields.country.value);
-    setFieldError("country", isValid ? "" : requiredMessages.country);
+    setFieldError("country", isValid ? "" : getCopy().requiredMessages.country);
     return isValid;
   }
 
   function validateCity() {
     const isValid = Boolean(fields.city.value);
-    setFieldError("city", isValid ? "" : requiredMessages.city);
+    setFieldError("city", isValid ? "" : getCopy().requiredMessages.city);
     return isValid;
   }
 
   function validateFoundUs() {
     const isValid = Boolean(fields.foundUs.value);
-    setFieldError("foundUs", isValid ? "" : requiredMessages.foundUs);
+    setFieldError("foundUs", isValid ? "" : getCopy().requiredMessages.foundUs);
     return isValid;
   }
 
@@ -264,13 +329,13 @@
     const value = fields.dateOfBirth.value;
     const isValid = Boolean(value) && is18OrOlder(value);
 
-    setFieldError("dateOfBirth", isValid ? "" : requiredMessages.dateOfBirth);
+    setFieldError("dateOfBirth", isValid ? "" : getCopy().requiredMessages.dateOfBirth);
     return isValid;
   }
 
   function validateAcceptTerms() {
     const isValid = fields.acceptTerms.checked;
-    setFieldError("acceptTerms", isValid ? "" : requiredMessages.acceptTerms);
+    setFieldError("acceptTerms", isValid ? "" : getCopy().requiredMessages.acceptTerms);
     return isValid;
   }
 
@@ -300,7 +365,7 @@
     fields.phone.addEventListener("input", validatePhone);
 
     fields.country.addEventListener("change", function () {
-      syncCities();
+      syncCities(false);
       validateCountry();
       validateCity();
       if (fields.phone.value.trim()) {
@@ -309,7 +374,7 @@
     });
 
     fields.city.addEventListener("change", function () {
-      syncLocations();
+      syncLocations(false);
       validateCity();
     });
 
@@ -328,7 +393,7 @@
     const isFormValid = validateAll();
 
     if (!isFormValid) {
-      setStatus("Please correct the highlighted fields and try again.", "error");
+      setStatus(getCopy().formErrorStatus, "error");
       const firstInvalid = form.querySelector('[aria-invalid="true"]');
       if (firstInvalid) {
         firstInvalid.focus();
@@ -338,7 +403,7 @@
 
     setStatus("", "success");
     form.reset();
-    syncCities();
+    syncCities(false);
 
     Object.keys(errors).forEach(function (fieldName) {
       setFieldError(fieldName, "");
@@ -350,7 +415,7 @@
 
     // Let the browser apply reset values before rebuilding dependent selects.
     window.setTimeout(function () {
-      syncCities();
+      syncCities(false);
       Object.keys(errors).forEach(function (fieldName) {
         setFieldError(fieldName, "");
       });
@@ -358,5 +423,13 @@
   });
 
   attachValidationListeners();
-  syncCities();
+  syncCities(false);
+
+  window.addEventListener("brasaland-language-change", function () {
+    clearStatus();
+    syncCities(true);
+    Object.keys(errors).forEach(function (fieldName) {
+      setFieldError(fieldName, "");
+    });
+  });
 })();
