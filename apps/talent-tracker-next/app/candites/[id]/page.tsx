@@ -1,8 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import type {
+  CandidateNote,
+  CandidatePayload,
+  CandidateRecord,
+  RecordStage,
+  RecordStatus,
+} from "../../../lib/api";
 import {
   addNote,
   deleteNote,
@@ -10,10 +17,24 @@ import {
   fetchRecordById,
   patchRecord,
   updateRecord,
-} from "@/lib/api";
+} from "../../../lib/api";
 
-const STATUS_VALUES = ["received", "in_progress", "selected", "discarded"];
-const STAGE_VALUES = [
+type FetchStatus = "loading" | "success" | "error";
+
+type CandidateFormState = {
+  full_name: string;
+  email: string;
+  phone: string;
+  position: string;
+  linkedin_url: string;
+  cv_url: string;
+  experience_years: string;
+};
+
+type CandidateFormErrors = Partial<Record<keyof CandidateFormState, string>>;
+
+const STATUS_VALUES: RecordStatus[] = ["received", "in_progress", "selected", "discarded"];
+const STAGE_VALUES: RecordStage[] = [
   "pending",
   "review",
   "personal_interview",
@@ -21,14 +42,14 @@ const STAGE_VALUES = [
   "offer_presented",
 ];
 
-function titleCase(value) {
+function titleCase(value: string): string {
   return String(value || "")
     .split("_")
     .join(" ")
     .replace(/\b\w/g, (char) => char.toUpperCase());
 }
 
-function formatDate(value) {
+function formatDate(value: string | undefined): string {
   if (!value) {
     return "-";
   }
@@ -41,12 +62,12 @@ function formatDate(value) {
   return date.toLocaleString();
 }
 
-function isValidEmail(value) {
+function isValidEmail(value: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 }
 
-function validateRequiredCandidateFields(payload) {
-  const errors = {};
+function validateRequiredCandidateFields(payload: CandidateFormState): CandidateFormErrors {
+  const errors: CandidateFormErrors = {};
 
   if (!payload.full_name.trim()) {
     errors.full_name = "Full name is required.";
@@ -74,20 +95,32 @@ function validateRequiredCandidateFields(payload) {
   return errors;
 }
 
+function toFormState(candidateData: CandidateRecord): CandidateFormState {
+  return {
+    full_name: candidateData.full_name || "",
+    email: candidateData.email || "",
+    phone: candidateData.phone || "",
+    position: candidateData.position || "",
+    linkedin_url: candidateData.linkedin_url || "",
+    cv_url: candidateData.cv_url || "",
+    experience_years: String(candidateData.experience_years ?? ""),
+  };
+}
+
 export default function CanditeDetailPage() {
-  const params = useParams();
+  const params = useParams<{ id: string }>();
   const id = String(params?.id || "");
 
-  const [candidate, setCandidate] = useState(null);
-  const [notes, setNotes] = useState([]);
+  const [candidate, setCandidate] = useState<CandidateRecord | null>(null);
+  const [notes, setNotes] = useState<CandidateNote[]>([]);
   const [loading, setLoading] = useState(true);
-  const [fetchStatus, setFetchStatus] = useState("loading");
+  const [fetchStatus, setFetchStatus] = useState<FetchStatus>("loading");
   const [fetchSuccessMessage, setFetchSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [infoMessage, setInfoMessage] = useState("");
-  const [statusDraft, setStatusDraft] = useState("");
-  const [stageDraft, setStageDraft] = useState("");
-  const [editForm, setEditForm] = useState({
+  const [statusDraft, setStatusDraft] = useState<RecordStatus>("received");
+  const [stageDraft, setStageDraft] = useState<RecordStage>("pending");
+  const [editForm, setEditForm] = useState<CandidateFormState>({
     full_name: "",
     email: "",
     phone: "",
@@ -96,7 +129,7 @@ export default function CanditeDetailPage() {
     cv_url: "",
     experience_years: "",
   });
-  const [editErrors, setEditErrors] = useState({});
+  const [editErrors, setEditErrors] = useState<CandidateFormErrors>({});
   const [savingEdit, setSavingEdit] = useState(false);
   const [noteContent, setNoteContent] = useState("");
   const [savingStatus, setSavingStatus] = useState(false);
@@ -104,7 +137,7 @@ export default function CanditeDetailPage() {
   const [savingNote, setSavingNote] = useState(false);
   const [deletingNoteId, setDeletingNoteId] = useState("");
 
-  async function loadCandidateAndNotes(recordId) {
+  async function loadCandidateAndNotes(recordId: string) {
     setLoading(true);
     setFetchStatus("loading");
     setFetchSuccessMessage("");
@@ -125,17 +158,9 @@ export default function CanditeDetailPage() {
       }
 
       setCandidate(candidateData);
-      setStatusDraft(candidateData.status || "");
-      setStageDraft(candidateData.stage || "");
-      setEditForm({
-        full_name: candidateData.full_name || "",
-        email: candidateData.email || "",
-        phone: candidateData.phone || "",
-        position: candidateData.position || "",
-        linkedin_url: candidateData.linkedin_url || "",
-        cv_url: candidateData.cv_url || "",
-        experience_years: String(candidateData.experience_years ?? ""),
-      });
+      setStatusDraft(candidateData.status || "received");
+      setStageDraft(candidateData.stage || "pending");
+      setEditForm(toFormState(candidateData));
       setEditErrors({});
       setNotes(notesData);
       setFetchStatus("success");
@@ -155,7 +180,7 @@ export default function CanditeDetailPage() {
       return;
     }
 
-    loadCandidateAndNotes(id);
+    void loadCandidateAndNotes(id);
   }, [id]);
 
   async function handlePatchStatus() {
@@ -202,7 +227,7 @@ export default function CanditeDetailPage() {
     }
   }
 
-  async function handleAddNote(event) {
+  async function handleAddNote(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     const content = noteContent.trim();
@@ -225,8 +250,8 @@ export default function CanditeDetailPage() {
 
       if (candidateData) {
         setCandidate(candidateData);
-        setStatusDraft(candidateData.status || "");
-        setStageDraft(candidateData.stage || "");
+        setStatusDraft(candidateData.status || statusDraft);
+        setStageDraft(candidateData.stage || stageDraft);
       }
 
       setNotes(notesData);
@@ -238,7 +263,7 @@ export default function CanditeDetailPage() {
     }
   }
 
-  async function handleDeleteNote(noteId) {
+  async function handleDeleteNote(noteId: string) {
     if (!id || !noteId) {
       return;
     }
@@ -257,8 +282,8 @@ export default function CanditeDetailPage() {
 
       if (candidateData) {
         setCandidate(candidateData);
-        setStatusDraft(candidateData.status || "");
-        setStageDraft(candidateData.stage || "");
+        setStatusDraft(candidateData.status || statusDraft);
+        setStageDraft(candidateData.stage || stageDraft);
       }
 
       setNotes(notesData);
@@ -270,7 +295,7 @@ export default function CanditeDetailPage() {
     }
   }
 
-  function updateEditField(field, value) {
+  function updateEditField(field: keyof CandidateFormState, value: string) {
     setEditForm((prev) => ({
       ...prev,
       [field]: value,
@@ -282,7 +307,7 @@ export default function CanditeDetailPage() {
     }));
   }
 
-  async function handleEditSubmit(event) {
+  async function handleEditSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!id) {
       return;
@@ -302,7 +327,7 @@ export default function CanditeDetailPage() {
     setSavingEdit(true);
 
     try {
-      const payload = {
+      const payload: CandidatePayload = {
         full_name: editForm.full_name.trim(),
         email: editForm.email.trim(),
         phone: editForm.phone.trim(),
@@ -316,15 +341,7 @@ export default function CanditeDetailPage() {
       setCandidate(updated);
       setStatusDraft(updated.status || statusDraft);
       setStageDraft(updated.stage || stageDraft);
-      setEditForm({
-        full_name: updated.full_name || "",
-        email: updated.email || "",
-        phone: updated.phone || "",
-        position: updated.position || "",
-        linkedin_url: updated.linkedin_url || "",
-        cv_url: updated.cv_url || "",
-        experience_years: String(updated.experience_years ?? ""),
-      });
+      setEditForm(toFormState(updated));
       setInfoMessage("Candidate updated successfully.");
     } catch (error) {
       setErrorMessage(error instanceof Error ? error.message : "Failed to update candidate.");
@@ -493,11 +510,7 @@ export default function CanditeDetailPage() {
                 </label>
 
                 <div>
-                  <button
-                    type="submit"
-                    disabled={savingEdit}
-                    style={{ padding: "8px 12px", fontWeight: 700 }}
-                  >
+                  <button type="submit" disabled={savingEdit} style={{ padding: "8px 12px", fontWeight: 700 }}>
                     {savingEdit ? "Saving..." : "Save candidate changes"}
                   </button>
                 </div>
@@ -510,7 +523,7 @@ export default function CanditeDetailPage() {
                 <div style={{ display: "flex", gap: "8px", marginTop: "4px", flexWrap: "wrap" }}>
                   <select
                     value={statusDraft}
-                    onChange={(event) => setStatusDraft(event.target.value)}
+                    onChange={(event) => setStatusDraft(event.target.value as RecordStatus)}
                     style={{ minWidth: "220px", padding: "8px" }}
                   >
                     {STATUS_VALUES.map((status) => (
@@ -535,7 +548,7 @@ export default function CanditeDetailPage() {
                 <div style={{ display: "flex", gap: "8px", marginTop: "4px", flexWrap: "wrap" }}>
                   <select
                     value={stageDraft}
-                    onChange={(event) => setStageDraft(event.target.value)}
+                    onChange={(event) => setStageDraft(event.target.value as RecordStage)}
                     style={{ minWidth: "220px", padding: "8px" }}
                   >
                     {STAGE_VALUES.map((stage) => (
@@ -573,7 +586,7 @@ export default function CanditeDetailPage() {
                         </div>
                         <button
                           type="button"
-                          onClick={() => handleDeleteNote(note.id)}
+                          onClick={() => void handleDeleteNote(note.id)}
                           disabled={deletingNoteId === note.id}
                           style={{ padding: "6px 10px" }}
                         >

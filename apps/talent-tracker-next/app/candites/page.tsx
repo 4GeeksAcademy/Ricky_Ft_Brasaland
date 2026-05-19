@@ -1,12 +1,39 @@
 "use client";
 
-import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { createRecord, fetchRecords } from "@/lib/api";
+import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
+import type { CandidatePayload, CandidateRecord, RecordStage, RecordStatus } from "../../lib/api";
+import { createRecord, fetchRecords } from "../../lib/api";
 
-const STATUS_VALUES = ["", "received", "in_progress", "selected", "discarded"];
-const STAGE_VALUES = [
+type FilterState = {
+  status: "" | RecordStatus;
+  stage: "" | RecordStage;
+};
+
+type FetchStatus = "loading" | "success" | "error";
+
+type CreateFormState = {
+  full_name: string;
+  email: string;
+  phone: string;
+  position: string;
+  linkedin_url: string;
+  cv_url: string;
+  experience_years: string;
+};
+
+type CreateFormErrors = Partial<Record<keyof CreateFormState, string>>;
+
+const STATUS_VALUES: Array<FilterState["status"]> = [
+  "",
+  "received",
+  "in_progress",
+  "selected",
+  "discarded",
+];
+
+const STAGE_VALUES: Array<FilterState["stage"]> = [
   "",
   "pending",
   "review",
@@ -15,29 +42,31 @@ const STAGE_VALUES = [
   "offer_presented",
 ];
 
-function titleCase(value) {
+function titleCase(value: string): string {
   return String(value || "")
     .split("_")
     .join(" ")
     .replace(/\b\w/g, (char) => char.toUpperCase());
 }
 
-const EMPTY_CREATE_FORM = {
-  full_name: "",
-  email: "",
-  phone: "",
-  position: "",
-  linkedin_url: "",
-  cv_url: "",
-  experience_years: "",
-};
+function getEmptyCreateForm(): CreateFormState {
+  return {
+    full_name: "",
+    email: "",
+    phone: "",
+    position: "",
+    linkedin_url: "",
+    cv_url: "",
+    experience_years: "",
+  };
+}
 
-function isValidEmail(value) {
+function isValidEmail(value: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 }
 
-function validateRequiredCandidateFields(payload) {
-  const errors = {};
+function validateRequiredCandidateFields(payload: CreateFormState): CreateFormErrors {
+  const errors: CreateFormErrors = {};
 
   if (!payload.full_name.trim()) {
     errors.full_name = "Full name is required.";
@@ -70,20 +99,20 @@ function CanditesListContent() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const [records, setRecords] = useState([]);
+  const [records, setRecords] = useState<CandidateRecord[]>([]);
   const [loading, setLoading] = useState(true);
-  const [fetchStatus, setFetchStatus] = useState("loading");
+  const [fetchStatus, setFetchStatus] = useState<FetchStatus>("loading");
   const [fetchSuccessMessage, setFetchSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [searchText, setSearchText] = useState("");
-  const [createForm, setCreateForm] = useState(EMPTY_CREATE_FORM);
-  const [createErrors, setCreateErrors] = useState({});
+  const [createForm, setCreateForm] = useState<CreateFormState>(getEmptyCreateForm());
+  const [createErrors, setCreateErrors] = useState<CreateFormErrors>({});
   const [createSaving, setCreateSaving] = useState(false);
   const [createMessage, setCreateMessage] = useState("");
-  const [createMessageType, setCreateMessageType] = useState("info");
+  const [createMessageType, setCreateMessageType] = useState<"info" | "success" | "error">("info");
 
-  const status = searchParams.get("status") || "";
-  const stage = searchParams.get("stage") || "";
+  const status = (searchParams.get("status") as FilterState["status"]) || "";
+  const stage = (searchParams.get("stage") as FilterState["stage"]) || "";
 
   const loadRecords = useCallback(async () => {
     setLoading(true);
@@ -105,10 +134,10 @@ function CanditesListContent() {
   }, [status, stage]);
 
   useEffect(() => {
-    loadRecords();
+    void loadRecords();
   }, [loadRecords]);
 
-  function updateFilter(key, value) {
+  function updateFilter(key: keyof FilterState, value: FilterState[typeof key]) {
     const params = new URLSearchParams(searchParams.toString());
 
     if (!value) {
@@ -121,7 +150,7 @@ function CanditesListContent() {
     router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
   }
 
-  function updateCreateField(field, value) {
+  function updateCreateField(field: keyof CreateFormState, value: string) {
     setCreateForm((prev) => ({
       ...prev,
       [field]: value,
@@ -133,7 +162,7 @@ function CanditesListContent() {
     }));
   }
 
-  async function handleCreateCandidate(event) {
+  async function handleCreateCandidate(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setCreateMessage("");
 
@@ -149,7 +178,7 @@ function CanditesListContent() {
     setCreateSaving(true);
 
     try {
-      const payload = {
+      const payload: CandidatePayload = {
         full_name: createForm.full_name.trim(),
         email: createForm.email.trim(),
         phone: createForm.phone.trim(),
@@ -160,7 +189,7 @@ function CanditesListContent() {
       };
 
       await createRecord(payload);
-      setCreateForm(EMPTY_CREATE_FORM);
+      setCreateForm(getEmptyCreateForm());
       setCreateErrors({});
       setCreateMessage("Candidate registered successfully.");
       setCreateMessageType("success");
@@ -274,11 +303,7 @@ function CanditesListContent() {
           </label>
 
           <div>
-            <button
-              type="submit"
-              disabled={createSaving}
-              style={{ padding: "8px 12px", fontWeight: 700 }}
-            >
+            <button type="submit" disabled={createSaving} style={{ padding: "8px 12px", fontWeight: 700 }}>
               {createSaving ? "Submitting..." : "Register candidate"}
             </button>
           </div>
@@ -312,7 +337,7 @@ function CanditesListContent() {
               <span className="meta">Filter by status</span>
               <select
                 value={status}
-                onChange={(event) => updateFilter("status", event.target.value)}
+                onChange={(event) => updateFilter("status", event.target.value as FilterState["status"])}
                 style={{ width: "100%", marginTop: "4px", padding: "7px" }}
               >
                 {STATUS_VALUES.map((value) => (
@@ -327,7 +352,7 @@ function CanditesListContent() {
               <span className="meta">Filter by stage</span>
               <select
                 value={stage}
-                onChange={(event) => updateFilter("stage", event.target.value)}
+                onChange={(event) => updateFilter("stage", event.target.value as FilterState["stage"])}
                 style={{ width: "100%", marginTop: "4px", padding: "7px" }}
               >
                 {STAGE_VALUES.map((value) => (
@@ -388,7 +413,13 @@ function CanditesListContent() {
 export default function CanditesListPage() {
   return (
     <main>
-      <Suspense fallback={<section className="panel"><p className="meta">Loading filters...</p></section>}>
+      <Suspense
+        fallback={
+          <section className="panel">
+            <p className="meta">Loading filters...</p>
+          </section>
+        }
+      >
         <CanditesListContent />
       </Suspense>
     </main>
