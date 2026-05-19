@@ -9,7 +9,7 @@ export default function HomePage() {
           This app uses Next.js routing. Open the candidates list and navigate to details without full page reloads.
         </p>
         <p>
-          <Link className="back" href="/candites">
+          <Link className="back" href="/candidates">
             Go to candidates list
           </Link>
         </p>
