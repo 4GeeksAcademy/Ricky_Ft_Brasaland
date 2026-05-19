@@ -1,0 +1,1282 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Talent Tracker | People Operations</title>
+    <meta
+      name="description"
+      content="Internal People and Talent dashboard to manage candidate pipeline, statuses, stages, and notes."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Manrope:wght@400;500;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #f2efe8;
+        --panel: #fffdf9;
+        --ink: #1f2933;
+        --muted: #52606d;
+        --line: #d9d6d0;
+        --primary: #0f766e;
+        --primary-strong: #115e59;
+        --accent: #d97706;
+        --danger: #b91c1c;
+        --ok: #166534;
+        --shadow: 0 16px 40px rgba(30, 41, 59, 0.08);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background:
+          radial-gradient(circle at 20% 10%, #fff7ed 0%, rgba(255, 247, 237, 0) 45%),
+          radial-gradient(circle at 90% 20%, #ecfeff 0%, rgba(236, 254, 255, 0) 35%),
+          var(--bg);
+        color: var(--ink);
+        font-family: "Manrope", "Segoe UI", sans-serif;
+      }
+
+      .shell {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 24px;
+      }
+
+      .hero {
+        border: 1px solid var(--line);
+        border-radius: 20px;
+        background: linear-gradient(140deg, #fffdf9 0%, #fff6e9 55%, #ecfeff 100%);
+        box-shadow: var(--shadow);
+        padding: 20px;
+        margin-bottom: 18px;
+        animation: rise 380ms ease-out;
+      }
+
+      @keyframes rise {
+        from {
+          transform: translateY(8px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+
+      h1,
+      h2,
+      h3 {
+        font-family: "Fraunces", Georgia, serif;
+        letter-spacing: 0.2px;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(1.65rem, 2vw, 2.2rem);
+      }
+
+      .hero p {
+        margin: 8px 0 0;
+        color: var(--muted);
+        max-width: 860px;
+      }
+
+      .hero-row {
+        margin-top: 14px;
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+
+      .hero-row input {
+        max-width: 430px;
+      }
+
+      .btn {
+        border: 0;
+        border-radius: 12px;
+        padding: 9px 14px;
+        font-weight: 700;
+        font-size: 0.92rem;
+        cursor: pointer;
+      }
+
+      .btn:disabled {
+        cursor: not-allowed;
+        opacity: 0.62;
+      }
+
+      .btn-primary {
+        color: #ffffff;
+        background: linear-gradient(130deg, var(--primary), #0ea5a0);
+      }
+
+      .btn-secondary {
+        color: var(--ink);
+        background: #fff;
+        border: 1px solid var(--line);
+      }
+
+      .btn-danger {
+        color: #fff;
+        background: linear-gradient(130deg, var(--danger), #dc2626);
+      }
+
+      .status-banner {
+        margin-top: 12px;
+        border-radius: 10px;
+        padding: 10px 12px;
+        font-size: 0.9rem;
+        border: 1px solid transparent;
+        display: none;
+      }
+
+      .status-banner.error {
+        display: block;
+        color: #7f1d1d;
+        background: #fef2f2;
+        border-color: #fecaca;
+      }
+
+      .status-banner.success {
+        display: block;
+        color: #14532d;
+        background: #f0fdf4;
+        border-color: #bbf7d0;
+      }
+
+      .status-banner.info {
+        display: block;
+        color: #134e4a;
+        background: #f0fdfa;
+        border-color: #99f6e4;
+      }
+
+      .content {
+        display: grid;
+        grid-template-columns: minmax(320px, 44%) 1fr;
+        gap: 18px;
+        align-items: start;
+      }
+
+      .panel {
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        background: var(--panel);
+        box-shadow: var(--shadow);
+      }
+
+      .panel-head {
+        padding: 16px 16px 10px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .panel-head h2,
+      .panel-head h3 {
+        margin: 0;
+      }
+
+      .controls {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 10px;
+        padding: 14px 16px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .inline-controls {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+
+      .list {
+        max-height: calc(100vh - 295px);
+        overflow: auto;
+      }
+
+      .candidate {
+        width: 100%;
+        background: none;
+        border: 0;
+        text-align: left;
+        padding: 12px 16px;
+        border-bottom: 1px solid #ece9e4;
+        cursor: pointer;
+        display: grid;
+        gap: 6px;
+      }
+
+      .candidate:hover {
+        background: #fff7ed;
+      }
+
+      .candidate.active {
+        background: #ecfeff;
+        border-left: 4px solid var(--primary);
+        padding-left: 12px;
+      }
+
+      .line-1 {
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+      }
+
+      .name {
+        font-weight: 800;
+        font-size: 0.95rem;
+      }
+
+      .position {
+        color: var(--muted);
+        font-size: 0.87rem;
+      }
+
+      .chips {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+
+      .chip {
+        font-size: 0.75rem;
+        border-radius: 999px;
+        border: 1px solid var(--line);
+        padding: 2px 9px;
+        background: #fff;
+      }
+
+      .chip.status-selected {
+        border-color: #bbf7d0;
+        background: #f0fdf4;
+        color: var(--ok);
+      }
+
+      .chip.status-discarded {
+        border-color: #fecaca;
+        background: #fef2f2;
+        color: #991b1b;
+      }
+
+      .chip.status-in_progress {
+        border-color: #bfdbfe;
+        background: #eff6ff;
+        color: #1d4ed8;
+      }
+
+      .chip.status-received {
+        border-color: #fde68a;
+        background: #fffbeb;
+        color: #92400e;
+      }
+
+      .detail-body {
+        padding: 16px;
+        display: grid;
+        gap: 14px;
+      }
+
+      .card {
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 14px;
+        background: #ffffff;
+      }
+
+      .card h3 {
+        margin: 0 0 10px;
+        font-size: 1.1rem;
+      }
+
+      .meta {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(120px, 1fr));
+        gap: 10px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 6px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: var(--muted);
+      }
+
+      input,
+      select,
+      textarea {
+        width: 100%;
+        border-radius: 10px;
+        border: 1px solid var(--line);
+        padding: 10px;
+        font: inherit;
+        color: var(--ink);
+        background: #fff;
+      }
+
+      input:focus,
+      select:focus,
+      textarea:focus {
+        outline: 2px solid #99f6e4;
+        border-color: #14b8a6;
+      }
+
+      .pair {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(120px, 1fr));
+        gap: 10px;
+      }
+
+      .field-grid {
+        display: grid;
+        gap: 10px;
+      }
+
+      .field-grid.two {
+        grid-template-columns: repeat(2, minmax(120px, 1fr));
+      }
+
+      .note {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 10px;
+        display: grid;
+        gap: 8px;
+        background: #fffcf5;
+      }
+
+      .note small {
+        color: var(--muted);
+      }
+
+      .empty,
+      .loading {
+        color: var(--muted);
+        padding: 18px 16px;
+      }
+
+      .modal {
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.35);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+
+      .modal.open {
+        display: flex;
+      }
+
+      .modal-box {
+        width: min(760px, 100%);
+        max-height: 92vh;
+        overflow: auto;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        background: var(--panel);
+        box-shadow: var(--shadow);
+        padding: 16px;
+      }
+
+      .modal-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        align-items: center;
+      }
+
+      .tiny {
+        font-size: 0.8rem;
+        color: var(--muted);
+      }
+
+      @media (max-width: 980px) {
+        .content {
+          grid-template-columns: 1fr;
+        }
+
+        .list {
+          max-height: 46vh;
+        }
+
+        .field-grid.two,
+        .pair,
+        .meta,
+        .inline-controls {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="shell">
+      <section class="hero" aria-label="Talent tracker header">
+        <h1>People Ops Candidate Tracker</h1>
+        <p>
+          Manage the full hiring pipeline in one place: list view, instant filters, detail panel,
+          stage and status updates, notes, and candidate registration.
+        </p>
+
+        <div class="hero-row">
+          <input id="apiBaseInput" type="text" aria-label="API base url" />
+          <button class="btn btn-secondary" id="saveApiBaseBtn" type="button">Use API URL</button>
+          <button class="btn btn-primary" id="newCandidateBtn" type="button">+ New candidate</button>
+        </div>
+
+        <div id="globalBanner" class="status-banner" role="status" aria-live="polite"></div>
+      </section>
+
+      <section class="content" aria-label="Candidate management area">
+        <aside class="panel" aria-label="Candidates list">
+          <div class="panel-head">
+            <h2>Candidates</h2>
+          </div>
+
+          <div class="controls">
+            <input id="searchInput" type="search" placeholder="Search by name or email" />
+            <div class="inline-controls">
+              <select id="statusFilter" aria-label="Filter by status"></select>
+              <select id="stageFilter" aria-label="Filter by stage"></select>
+            </div>
+            <button class="btn btn-secondary" id="refreshListBtn" type="button">Refresh list</button>
+          </div>
+
+          <div id="listContainer" class="list"></div>
+        </aside>
+
+        <section class="panel" aria-label="Candidate detail panel">
+          <div class="panel-head">
+            <h2>Detail</h2>
+          </div>
+          <div id="detailContainer" class="detail-body">
+            <p class="empty">Select a candidate to open details.</p>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <div class="modal" id="createModal" aria-hidden="true">
+      <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="createTitle">
+        <div class="modal-head">
+          <h3 id="createTitle">Register new candidate</h3>
+          <button class="btn btn-secondary" type="button" id="closeCreateModalBtn">Close</button>
+        </div>
+        <p class="tiny">Required fields: full name, email, phone, position, years of experience.</p>
+        <form id="createCandidateForm" class="field-grid" novalidate>
+          <div class="field-grid two">
+            <div>
+              <label for="createFullName">Full name</label>
+              <input id="createFullName" name="full_name" required />
+            </div>
+            <div>
+              <label for="createEmail">Email</label>
+              <input id="createEmail" name="email" type="email" required />
+            </div>
+          </div>
+          <div class="field-grid two">
+            <div>
+              <label for="createPhone">Phone</label>
+              <input id="createPhone" name="phone" required />
+            </div>
+            <div>
+              <label for="createPosition">Position</label>
+              <input id="createPosition" name="position" required />
+            </div>
+          </div>
+          <div class="field-grid two">
+            <div>
+              <label for="createLinkedin">LinkedIn URL</label>
+              <input id="createLinkedin" name="linkedin_url" type="url" />
+            </div>
+            <div>
+              <label for="createCv">CV URL</label>
+              <input id="createCv" name="cv_url" type="url" />
+            </div>
+          </div>
+          <div>
+            <label for="createExperience">Experience (years)</label>
+            <input id="createExperience" name="experience_years" type="number" min="0" step="0.5" required />
+          </div>
+          <div>
+            <button class="btn btn-primary" type="submit" id="createSubmitBtn">Create candidate</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      (function () {
+        var DEFAULT_API_BASE = "https://playground.4geeks.com/tracker/api/v1";
+        var STATUS_VALUES = ["received", "in_progress", "selected", "discarded"];
+        var STAGE_VALUES = [
+          "pending",
+          "review",
+          "personal_interview",
+          "technical_interview",
+          "offer_presented",
+        ];
+
+        var state = {
+          apiBase: localStorage.getItem("tracker_api_base") || DEFAULT_API_BASE,
+          records: [],
+          selectedId: null,
+          selectedRecord: null,
+          notes: [],
+          filters: {
+            status: "",
+            stage: "",
+            search: "",
+          },
+          listLoading: false,
+          detailLoading: false,
+          noteSaving: false,
+          createSaving: false,
+        };
+
+        var el = {
+          apiBaseInput: document.getElementById("apiBaseInput"),
+          saveApiBaseBtn: document.getElementById("saveApiBaseBtn"),
+          globalBanner: document.getElementById("globalBanner"),
+          searchInput: document.getElementById("searchInput"),
+          statusFilter: document.getElementById("statusFilter"),
+          stageFilter: document.getElementById("stageFilter"),
+          refreshListBtn: document.getElementById("refreshListBtn"),
+          listContainer: document.getElementById("listContainer"),
+          detailContainer: document.getElementById("detailContainer"),
+          newCandidateBtn: document.getElementById("newCandidateBtn"),
+          createModal: document.getElementById("createModal"),
+          closeCreateModalBtn: document.getElementById("closeCreateModalBtn"),
+          createCandidateForm: document.getElementById("createCandidateForm"),
+          createSubmitBtn: document.getElementById("createSubmitBtn"),
+        };
+
+        function titleCase(value) {
+          return String(value || "")
+            .split("_")
+            .join(" ")
+            .replace(/\b\w/g, function (char) {
+              return char.toUpperCase();
+            });
+        }
+
+        function formatDate(value) {
+          if (!value) {
+            return "-";
+          }
+
+          var dt = new Date(value);
+          if (Number.isNaN(dt.getTime())) {
+            return "-";
+          }
+
+          return dt.toLocaleString();
+        }
+
+        function setBanner(message, type) {
+          el.globalBanner.className = "status-banner";
+          el.globalBanner.textContent = message || "";
+
+          if (!message) {
+            return;
+          }
+
+          el.globalBanner.classList.add(type || "info");
+        }
+
+        function debounce(fn, ms) {
+          var timer;
+          return function () {
+            var args = arguments;
+            clearTimeout(timer);
+            timer = setTimeout(function () {
+              fn.apply(null, args);
+            }, ms);
+          };
+        }
+
+        function toQuery(filters) {
+          var query = new URLSearchParams();
+          if (filters.status) {
+            query.set("status", filters.status);
+          }
+          if (filters.stage) {
+            query.set("stage", filters.stage);
+          }
+          if (filters.search) {
+            query.set("search", filters.search);
+          }
+          query.set("limit", "100");
+          return query.toString();
+        }
+
+        function normalizeList(payload) {
+          if (Array.isArray(payload)) {
+            return payload;
+          }
+
+          if (payload && Array.isArray(payload.items)) {
+            return payload.items;
+          }
+
+          if (payload && Array.isArray(payload.results)) {
+            return payload.results;
+          }
+
+          if (payload && Array.isArray(payload.data)) {
+            return payload.data;
+          }
+
+          return [];
+        }
+
+        function normalizeNotes(payload) {
+          if (Array.isArray(payload)) {
+            return payload;
+          }
+
+          if (payload && Array.isArray(payload.notes)) {
+            return payload.notes;
+          }
+
+          if (payload && Array.isArray(payload.data)) {
+            return payload.data;
+          }
+
+          return [];
+        }
+
+        async function request(path, options) {
+          var response;
+          try {
+            response = await fetch(state.apiBase + path, options || {});
+          } catch (error) {
+            throw new Error("Network error: check your connection or API URL.");
+          }
+
+          if (!response.ok) {
+            var text = "";
+            try {
+              text = await response.text();
+            } catch (_) {
+              text = "";
+            }
+
+            var details = text || response.statusText || "Unexpected API error";
+            throw new Error("API " + response.status + ": " + details);
+          }
+
+          if (response.status === 204) {
+            return null;
+          }
+
+          return response.json();
+        }
+
+        function fillFilterOptions() {
+          el.statusFilter.innerHTML = "";
+          el.stageFilter.innerHTML = "";
+
+          var statusAll = document.createElement("option");
+          statusAll.value = "";
+          statusAll.textContent = "All status";
+          el.statusFilter.appendChild(statusAll);
+
+          STATUS_VALUES.forEach(function (value) {
+            var option = document.createElement("option");
+            option.value = value;
+            option.textContent = titleCase(value);
+            el.statusFilter.appendChild(option);
+          });
+
+          var stageAll = document.createElement("option");
+          stageAll.value = "";
+          stageAll.textContent = "All stages";
+          el.stageFilter.appendChild(stageAll);
+
+          STAGE_VALUES.forEach(function (value) {
+            var option = document.createElement("option");
+            option.value = value;
+            option.textContent = titleCase(value);
+            el.stageFilter.appendChild(option);
+          });
+        }
+
+        function renderList() {
+          if (state.listLoading) {
+            el.listContainer.innerHTML = '<p class="loading">Loading candidates...</p>';
+            return;
+          }
+
+          if (!state.records.length) {
+            el.listContainer.innerHTML =
+              '<p class="empty">No candidates match your filters. Try clearing status/stage/search.</p>';
+            return;
+          }
+
+          var html = state.records
+            .map(function (record) {
+              var isActive = state.selectedId === record.id;
+              return (
+                '<button class="candidate' +
+                (isActive ? ' active' : '') +
+                '" type="button" data-id="' +
+                record.id +
+                '">' +
+                '<div class="line-1"><span class="name">' +
+                escapeHtml(record.full_name) +
+                '</span><span class="tiny">' +
+                escapeHtml(record.email) +
+                '</span></div>' +
+                '<div class="position">' +
+                escapeHtml(record.position || "-") +
+                '</div>' +
+                '<div class="chips">' +
+                '<span class="chip status-' +
+                escapeHtml(record.status || "") +
+                '">' +
+                titleCase(record.status) +
+                '</span>' +
+                '<span class="chip">' +
+                titleCase(record.stage) +
+                '</span>' +
+                '<span class="chip">Notes: ' +
+                Number(record.notes_count || 0) +
+                '</span>' +
+                '</div>' +
+                '</button>'
+              );
+            })
+            .join("");
+
+          el.listContainer.innerHTML = html;
+        }
+
+        function escapeHtml(value) {
+          return String(value || "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/\"/g, "&quot;")
+            .replace(/'/g, "&#39;");
+        }
+
+        function getRecordById(id) {
+          return state.records.find(function (record) {
+            return record.id === id;
+          });
+        }
+
+        function renderDetail() {
+          if (state.detailLoading) {
+            el.detailContainer.innerHTML = '<p class="loading">Loading candidate details...</p>';
+            return;
+          }
+
+          if (!state.selectedRecord) {
+            el.detailContainer.innerHTML = '<p class="empty">Select a candidate to open details.</p>';
+            return;
+          }
+
+          var record = state.selectedRecord;
+
+          var statusOptions = STATUS_VALUES.map(function (value) {
+            return (
+              '<option value="' +
+              value +
+              '"' +
+              (record.status === value ? ' selected' : '') +
+              '>' +
+              titleCase(value) +
+              '</option>'
+            );
+          }).join("");
+
+          var stageOptions = STAGE_VALUES.map(function (value) {
+            return (
+              '<option value="' +
+              value +
+              '"' +
+              (record.stage === value ? ' selected' : '') +
+              '>' +
+              titleCase(value) +
+              '</option>'
+            );
+          }).join("");
+
+          var notesHtml = "";
+          if (!state.notes.length) {
+            notesHtml = '<p class="tiny">No notes yet.</p>';
+          } else {
+            notesHtml = state.notes
+              .map(function (note) {
+                return (
+                  '<article class="note">' +
+                  '<small>' +
+                  formatDate(note.created_at || note.updated_at) +
+                  '</small>' +
+                  '<div>' +
+                  escapeHtml(note.content || "") +
+                  '</div>' +
+                  '<div><button class="btn btn-danger" type="button" data-delete-note="' +
+                  note.id +
+                  '">Delete note</button></div>' +
+                  '</article>'
+                );
+              })
+              .join("");
+          }
+
+          el.detailContainer.innerHTML =
+            '<article class="card">' +
+            '<h3>' +
+            escapeHtml(record.full_name) +
+            '</h3>' +
+            '<div class="meta">' +
+            '<div><label>Email</label><div>' +
+            escapeHtml(record.email) +
+            '</div></div>' +
+            '<div><label>Phone</label><div>' +
+            escapeHtml(record.phone || "-") +
+            '</div></div>' +
+            '<div><label>Applied</label><div>' +
+            escapeHtml(formatDate(record.applied_at)) +
+            '</div></div>' +
+            '<div><label>Updated</label><div>' +
+            escapeHtml(formatDate(record.updated_at)) +
+            '</div></div>' +
+            '</div>' +
+            '</article>' +
+            '<article class="card">' +
+            '<h3>Quick pipeline actions</h3>' +
+            '<div class="pair">' +
+            '<div><label for="quickStatus">Status</label><select id="quickStatus">' +
+            statusOptions +
+            '</select></div>' +
+            '<div><label for="quickStage">Stage</label><select id="quickStage">' +
+            stageOptions +
+            '</select></div>' +
+            '</div>' +
+            '<p class="tiny">Changing either field saves immediately.</p>' +
+            '</article>' +
+            '<article class="card">' +
+            '<h3>Edit candidate data</h3>' +
+            '<form id="editForm" class="field-grid" novalidate>' +
+            '<div class="field-grid two">' +
+            '<div><label for="editName">Full name</label><input id="editName" name="full_name" value="' +
+            escapeHtml(record.full_name) +
+            '" required /></div>' +
+            '<div><label for="editEmail">Email</label><input id="editEmail" name="email" type="email" value="' +
+            escapeHtml(record.email) +
+            '" required /></div>' +
+            '</div>' +
+            '<div class="field-grid two">' +
+            '<div><label for="editPhone">Phone</label><input id="editPhone" name="phone" value="' +
+            escapeHtml(record.phone || "") +
+            '" required /></div>' +
+            '<div><label for="editPosition">Position</label><input id="editPosition" name="position" value="' +
+            escapeHtml(record.position || "") +
+            '" required /></div>' +
+            '</div>' +
+            '<div class="field-grid two">' +
+            '<div><label for="editLinkedin">LinkedIn URL</label><input id="editLinkedin" name="linkedin_url" type="url" value="' +
+            escapeHtml(record.linkedin_url || "") +
+            '" /></div>' +
+            '<div><label for="editCv">CV URL</label><input id="editCv" name="cv_url" type="url" value="' +
+            escapeHtml(record.cv_url || "") +
+            '" /></div>' +
+            '</div>' +
+            '<div><label for="editExperience">Experience (years)</label><input id="editExperience" name="experience_years" type="number" min="0" step="0.5" value="' +
+            escapeHtml(record.experience_years) +
+            '" required /></div>' +
+            '<button class="btn btn-primary" type="submit" id="saveEditBtn">Save changes</button>' +
+            '</form>' +
+            '</article>' +
+            '<article class="card">' +
+            '<h3>Internal notes</h3>' +
+            '<form id="noteForm" class="field-grid" novalidate>' +
+            '<div><label for="noteContent">Add note</label><textarea id="noteContent" name="content" rows="3" maxlength="1000" required></textarea></div>' +
+            '<button class="btn btn-primary" type="submit" id="saveNoteBtn">Add note</button>' +
+            '</form>' +
+            '<div class="field-grid" style="margin-top: 12px">' +
+            notesHtml +
+            '</div>' +
+            '</article>';
+        }
+
+        async function loadRecords() {
+          state.listLoading = true;
+          renderList();
+
+          try {
+            var query = toQuery(state.filters);
+            var payload = await request("/records?" + query);
+            state.records = normalizeList(payload);
+
+            if (state.selectedId) {
+              var stillExists = getRecordById(state.selectedId);
+              if (!stillExists) {
+                state.selectedId = null;
+                state.selectedRecord = null;
+                state.notes = [];
+              }
+            }
+
+            renderList();
+            renderDetail();
+          } catch (error) {
+            setBanner(error.message, "error");
+          } finally {
+            state.listLoading = false;
+            renderList();
+          }
+        }
+
+        async function loadDetail(id) {
+          state.detailLoading = true;
+          renderDetail();
+
+          try {
+            var record = await request("/records/" + encodeURIComponent(id));
+            state.selectedRecord = record;
+            state.selectedId = record.id;
+
+            var notesPayload = await request("/records/" + encodeURIComponent(id) + "/notes");
+            state.notes = normalizeNotes(notesPayload);
+
+            renderList();
+            renderDetail();
+          } catch (error) {
+            setBanner(error.message, "error");
+          } finally {
+            state.detailLoading = false;
+            renderDetail();
+          }
+        }
+
+        async function quickPatch(field, value) {
+          if (!state.selectedRecord) {
+            return;
+          }
+
+          var body = {};
+          body[field] = value;
+
+          try {
+            await request("/records/" + encodeURIComponent(state.selectedRecord.id), {
+              method: "PATCH",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(body),
+            });
+
+            setBanner(titleCase(field) + " updated to " + titleCase(value) + ".", "success");
+            await loadDetail(state.selectedRecord.id);
+            await loadRecords();
+          } catch (error) {
+            setBanner(error.message, "error");
+            renderDetail();
+          }
+        }
+
+        function getCreatePayload(form) {
+          var data = new FormData(form);
+          return {
+            full_name: String(data.get("full_name") || "").trim(),
+            email: String(data.get("email") || "").trim(),
+            phone: String(data.get("phone") || "").trim(),
+            position: String(data.get("position") || "").trim(),
+            linkedin_url: String(data.get("linkedin_url") || "").trim() || null,
+            cv_url: String(data.get("cv_url") || "").trim() || null,
+            experience_years: Number(data.get("experience_years") || 0),
+          };
+        }
+
+        function validatePayload(payload) {
+          if (!payload.full_name || !payload.email || !payload.phone || !payload.position) {
+            return "Complete all required fields.";
+          }
+
+          if (!Number.isFinite(payload.experience_years) || payload.experience_years < 0) {
+            return "Experience years must be 0 or more.";
+          }
+
+          return "";
+        }
+
+        async function createCandidate(event) {
+          event.preventDefault();
+          var payload = getCreatePayload(el.createCandidateForm);
+          var validationError = validatePayload(payload);
+
+          if (validationError) {
+            setBanner(validationError, "error");
+            return;
+          }
+
+          if (state.createSaving) {
+            return;
+          }
+
+          state.createSaving = true;
+          el.createSubmitBtn.disabled = true;
+
+          try {
+            var created = await request("/records", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(payload),
+            });
+
+            closeCreateModal();
+            setBanner("Candidate created successfully.", "success");
+            await loadRecords();
+            if (created && created.id) {
+              await loadDetail(created.id);
+            }
+          } catch (error) {
+            setBanner(error.message, "error");
+          } finally {
+            state.createSaving = false;
+            el.createSubmitBtn.disabled = false;
+          }
+        }
+
+        async function saveEdit(event) {
+          event.preventDefault();
+          if (!state.selectedRecord) {
+            return;
+          }
+
+          var payload = getCreatePayload(event.target);
+          var validationError = validatePayload(payload);
+          if (validationError) {
+            setBanner(validationError, "error");
+            return;
+          }
+
+          var saveBtn = document.getElementById("saveEditBtn");
+          if (saveBtn) {
+            saveBtn.disabled = true;
+          }
+
+          try {
+            await request("/records/" + encodeURIComponent(state.selectedRecord.id), {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(payload),
+            });
+
+            setBanner("Candidate data saved.", "success");
+            await loadDetail(state.selectedRecord.id);
+            await loadRecords();
+          } catch (error) {
+            setBanner(error.message, "error");
+          } finally {
+            if (saveBtn) {
+              saveBtn.disabled = false;
+            }
+          }
+        }
+
+        async function addNote(event) {
+          event.preventDefault();
+          if (!state.selectedRecord || state.noteSaving) {
+            return;
+          }
+
+          var noteForm = event.target;
+          var data = new FormData(noteForm);
+          var content = String(data.get("content") || "").trim();
+
+          if (!content) {
+            setBanner("Note cannot be empty.", "error");
+            return;
+          }
+
+          state.noteSaving = true;
+          var saveBtn = document.getElementById("saveNoteBtn");
+          if (saveBtn) {
+            saveBtn.disabled = true;
+          }
+
+          try {
+            await request("/records/" + encodeURIComponent(state.selectedRecord.id) + "/notes", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ content: content }),
+            });
+
+            noteForm.reset();
+            setBanner("Note added.", "success");
+            await loadDetail(state.selectedRecord.id);
+            await loadRecords();
+          } catch (error) {
+            setBanner(error.message, "error");
+          } finally {
+            state.noteSaving = false;
+            if (saveBtn) {
+              saveBtn.disabled = false;
+            }
+          }
+        }
+
+        async function deleteNote(noteId) {
+          if (!state.selectedRecord || !noteId) {
+            return;
+          }
+
+          try {
+            await request(
+              "/records/" +
+                encodeURIComponent(state.selectedRecord.id) +
+                "/notes/" +
+                encodeURIComponent(noteId),
+              {
+                method: "DELETE",
+              },
+            );
+
+            setBanner("Note deleted.", "info");
+            await loadDetail(state.selectedRecord.id);
+            await loadRecords();
+          } catch (error) {
+            setBanner(error.message, "error");
+          }
+        }
+
+        function openCreateModal() {
+          el.createModal.classList.add("open");
+          el.createModal.setAttribute("aria-hidden", "false");
+        }
+
+        function closeCreateModal() {
+          el.createModal.classList.remove("open");
+          el.createModal.setAttribute("aria-hidden", "true");
+          el.createCandidateForm.reset();
+        }
+
+        function initEvents() {
+          el.saveApiBaseBtn.addEventListener("click", function () {
+            var raw = String(el.apiBaseInput.value || "").trim();
+            if (!raw) {
+              setBanner("Enter a valid API base URL.", "error");
+              return;
+            }
+
+            state.apiBase = raw.replace(/\/$/, "");
+            localStorage.setItem("tracker_api_base", state.apiBase);
+            setBanner("API base URL updated.", "info");
+            loadRecords();
+          });
+
+          el.searchInput.addEventListener(
+            "input",
+            debounce(function (event) {
+              state.filters.search = String(event.target.value || "").trim();
+              loadRecords();
+            }, 280),
+          );
+
+          el.statusFilter.addEventListener("change", function (event) {
+            state.filters.status = String(event.target.value || "");
+            loadRecords();
+          });
+
+          el.stageFilter.addEventListener("change", function (event) {
+            state.filters.stage = String(event.target.value || "");
+            loadRecords();
+          });
+
+          el.refreshListBtn.addEventListener("click", function () {
+            loadRecords();
+            if (state.selectedId) {
+              loadDetail(state.selectedId);
+            }
+          });
+
+          el.listContainer.addEventListener("click", function (event) {
+            var item = event.target.closest("[data-id]");
+            if (!item) {
+              return;
+            }
+
+            var id = item.getAttribute("data-id");
+            if (!id) {
+              return;
+            }
+
+            loadDetail(id);
+          });
+
+          el.detailContainer.addEventListener("change", function (event) {
+            if (event.target && event.target.id === "quickStatus") {
+              quickPatch("status", String(event.target.value || ""));
+            }
+
+            if (event.target && event.target.id === "quickStage") {
+              quickPatch("stage", String(event.target.value || ""));
+            }
+          });
+
+          el.detailContainer.addEventListener("submit", function (event) {
+            if (event.target && event.target.id === "editForm") {
+              saveEdit(event);
+            }
+
+            if (event.target && event.target.id === "noteForm") {
+              addNote(event);
+            }
+          });
+
+          el.detailContainer.addEventListener("click", function (event) {
+            var noteBtn = event.target.closest("[data-delete-note]");
+            if (!noteBtn) {
+              return;
+            }
+
+            var noteId = noteBtn.getAttribute("data-delete-note");
+            deleteNote(noteId);
+          });
+
+          el.newCandidateBtn.addEventListener("click", openCreateModal);
+          el.closeCreateModalBtn.addEventListener("click", closeCreateModal);
+          el.createModal.addEventListener("click", function (event) {
+            if (event.target === el.createModal) {
+              closeCreateModal();
+            }
+          });
+          el.createCandidateForm.addEventListener("submit", createCandidate);
+        }
+
+        function init() {
+          el.apiBaseInput.value = state.apiBase;
+          fillFilterOptions();
+          initEvents();
+          setBanner("Ready. Loading candidates...", "info");
+          loadRecords();
+        }
+
+        init();
+      })();
+    </script>
+  </body>
+</html>

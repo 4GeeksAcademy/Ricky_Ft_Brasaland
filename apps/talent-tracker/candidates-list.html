@@ -1,0 +1,333 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Candidates List | Talent Tracker</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&family=Manrope:wght@400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #f4f1ea;
+        --panel: #fffdf9;
+        --ink: #1f2933;
+        --muted: #52606d;
+        --line: #d9d6d0;
+        --primary: #0f766e;
+        --danger: #b91c1c;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background:
+          radial-gradient(circle at 12% 10%, #fff7ed 0%, rgba(255, 247, 237, 0) 38%),
+          radial-gradient(circle at 88% 12%, #ecfeff 0%, rgba(236, 254, 255, 0) 38%),
+          var(--bg);
+        color: var(--ink);
+        font-family: "Manrope", "Segoe UI", sans-serif;
+      }
+
+      .wrap {
+        max-width: 1080px;
+        margin: 0 auto;
+        padding: 24px;
+      }
+
+      .header {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 18px;
+        margin-bottom: 14px;
+      }
+
+      h1 {
+        margin: 0;
+        font-family: "Fraunces", Georgia, serif;
+        font-size: clamp(1.5rem, 2vw, 2rem);
+      }
+
+      .subtitle {
+        margin-top: 8px;
+        color: var(--muted);
+      }
+
+      .tools {
+        margin-top: 14px;
+        display: grid;
+        grid-template-columns: 1fr auto auto;
+        gap: 8px;
+      }
+
+      input,
+      button {
+        font: inherit;
+      }
+
+      input {
+        border-radius: 10px;
+        border: 1px solid var(--line);
+        padding: 10px;
+      }
+
+      button {
+        border: 0;
+        border-radius: 10px;
+        padding: 10px 12px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      .btn-primary {
+        color: #fff;
+        background: linear-gradient(135deg, var(--primary), #0ea5a0);
+      }
+
+      .btn-secondary {
+        color: var(--ink);
+        background: #fff;
+        border: 1px solid var(--line);
+      }
+
+      .panel {
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        overflow: hidden;
+        background: var(--panel);
+      }
+
+      .state {
+        padding: 16px;
+      }
+
+      .state.error {
+        color: var(--danger);
+      }
+
+      .list {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .item {
+        border-top: 1px solid #ece9e4;
+        padding: 14px 16px;
+        display: grid;
+        gap: 6px;
+      }
+
+      .item:first-child {
+        border-top: 0;
+      }
+
+      .line {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .name {
+        font-weight: 800;
+      }
+
+      .muted {
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+
+      .chip {
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 2px 9px;
+        font-size: 0.76rem;
+      }
+
+      @media (max-width: 760px) {
+        .tools {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <section class="header">
+        <h1>Candidates List</h1>
+        <p class="subtitle">Displays all candidates fetched from GET /records.</p>
+        <div class="tools">
+          <input id="apiBaseInput" type="text" aria-label="API base url" />
+          <button id="saveBaseBtn" class="btn-secondary" type="button">Use API URL</button>
+          <button id="reloadBtn" class="btn-primary" type="button">Reload</button>
+        </div>
+      </section>
+
+      <section class="panel" aria-live="polite">
+        <div id="content"></div>
+      </section>
+    </main>
+
+    <script>
+      (function () {
+        var DEFAULT_API_BASE = "https://playground.4geeks.com/tracker/api/v1";
+        var state = {
+          apiBase: localStorage.getItem("tracker_api_base") || DEFAULT_API_BASE,
+          loading: false,
+          error: "",
+          records: [],
+        };
+
+        var el = {
+          apiBaseInput: document.getElementById("apiBaseInput"),
+          saveBaseBtn: document.getElementById("saveBaseBtn"),
+          reloadBtn: document.getElementById("reloadBtn"),
+          content: document.getElementById("content"),
+        };
+
+        function titleCase(value) {
+          return String(value || "")
+            .split("_")
+            .join(" ")
+            .replace(/\b\w/g, function (char) {
+              return char.toUpperCase();
+            });
+        }
+
+        function escapeHtml(value) {
+          return String(value || "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/\"/g, "&quot;")
+            .replace(/'/g, "&#39;");
+        }
+
+        function normalizeList(payload) {
+          if (Array.isArray(payload)) {
+            return payload;
+          }
+          if (payload && Array.isArray(payload.items)) {
+            return payload.items;
+          }
+          if (payload && Array.isArray(payload.results)) {
+            return payload.results;
+          }
+          if (payload && Array.isArray(payload.data)) {
+            return payload.data;
+          }
+          return [];
+        }
+
+        function render() {
+          if (state.loading) {
+            el.content.innerHTML = '<div class="state">Loading candidates...</div>';
+            return;
+          }
+
+          if (state.error) {
+            el.content.innerHTML = '<div class="state error">' + escapeHtml(state.error) + "</div>";
+            return;
+          }
+
+          if (!state.records.length) {
+            el.content.innerHTML = '<div class="state">No candidates found.</div>';
+            return;
+          }
+
+          var items = state.records
+            .map(function (record) {
+              return (
+                '<li class="item">' +
+                '<div class="line"><span class="name">Full name: ' +
+                escapeHtml(record.full_name) +
+                "</span></div>" +
+                '<div class="muted">' +
+                "Position applied for: " +
+                escapeHtml(record.position || "-") +
+                '</div>' +
+                '<div class="chips">' +
+                '<span class="chip">Current status: ' +
+                escapeHtml(titleCase(record.status)) +
+                '</span>' +
+                '<span class="chip">Current stage: ' +
+                escapeHtml(titleCase(record.stage)) +
+                '</span>' +
+                '</div>' +
+                '</li>'
+              );
+            })
+            .join("");
+
+          el.content.innerHTML = '<ul class="list">' + items + "</ul>";
+        }
+
+        async function fetchRecords() {
+          state.loading = true;
+          state.error = "";
+          render();
+
+          try {
+            var response = await fetch(state.apiBase + "/records?limit=100");
+            if (!response.ok) {
+              var message = "";
+              try {
+                message = await response.text();
+              } catch (_) {
+                message = "";
+              }
+              throw new Error("API " + response.status + ": " + (message || response.statusText));
+            }
+
+            var payload = await response.json();
+            state.records = normalizeList(payload);
+          } catch (error) {
+            state.error = error && error.message ? error.message : "Failed to load candidates.";
+          } finally {
+            state.loading = false;
+            render();
+          }
+        }
+
+        function setupEvents() {
+          el.saveBaseBtn.addEventListener("click", function () {
+            var raw = String(el.apiBaseInput.value || "").trim();
+            if (!raw) {
+              return;
+            }
+
+            state.apiBase = raw.replace(/\/$/, "");
+            localStorage.setItem("tracker_api_base", state.apiBase);
+            fetchRecords();
+          });
+
+          el.reloadBtn.addEventListener("click", fetchRecords);
+        }
+
+        function init() {
+          el.apiBaseInput.value = state.apiBase;
+          setupEvents();
+          fetchRecords();
+        }
+
+        init();
+      })();
+    </script>
+  </body>
+</html>
